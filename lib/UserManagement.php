@@ -435,6 +435,30 @@ class UserManagement
     }
 
     /**
+     * Find an Invitation by Token
+     *
+     * @param string $invitationToken The token of the Invitation
+     *
+     * @throws Exception\WorkOSException
+     *
+     * @return \WorkOS\Resource\Invitation
+     */
+    public function findInvitationByToken($invitationToken)
+    {
+        $path = "/user_management/invitations/by_token/{$invitationToken}";
+
+        $response = Client::request(
+            Client::METHOD_GET,
+            $path,
+            null,
+            null,
+            true
+        );
+
+        return Resource\Invitation::constructFromResponse($response);
+    }
+
+    /**
      * List Invitations
      *
      * @param string|null $email Email of the invitee
@@ -889,6 +913,30 @@ class UserManagement
     }
 
     /**
+     * Get an email verification object
+     *
+     * @param string $emailVerificationId ID of the email verification object
+     *
+     * @throws Exception\WorkOSException
+     *
+     * @return \WorkOS\Resource\EmailVerification
+     */
+    public function getEmailVerification($emailVerificationId)
+    {
+        $path = "/user_management/email_verification/{$emailVerificationId}";
+
+        $response = Client::request(
+            Client::METHOD_GET,
+            $path,
+            null,
+            null,
+            true
+        );
+
+        return Resource\EmailVerification::constructFromResponse($response);
+    }
+
+    /**
      * Create Email Verification Challenge.
      *
      * @param string $userId The unique ID of the User whose email address will be verified.
@@ -930,6 +978,59 @@ class UserManagement
     }
 
     /**
+     * Get a password reset object
+     *
+     * @param string $passwordResetId ID of the password reset object
+     *
+     * @throws Exception\WorkOSException
+     *
+     * @return \WorkOS\Resource\PasswordReset
+     */
+    public function getPasswordReset($passwordResetId)
+    {
+        $path = "/user_management/password_reset/{$passwordResetId}";
+
+        $response = Client::request(
+            Client::METHOD_GET,
+            $path,
+            null,
+            null,
+            true
+        );
+
+        return Resource\PasswordReset::constructFromResponse($response);
+    }
+
+    /**
+     * Creates a password reset token
+     *
+     * @param string $email The email address of the user
+     *
+     * @throws Exception\WorkOSException
+     *
+     * @return \WorkOS\Resource\PasswordReset
+     */
+    public function createPasswordReset(
+        $email,
+    ) {
+        $path = "/user_management/password_reset";
+
+        $params = [
+            "email" => $email
+        ];
+
+        $response = Client::request(
+            Client::METHOD_POST,
+            $path,
+            null,
+            $params,
+            true
+        );
+
+        return Resource\PasswordReset::constructFromResponse($response);
+    }
+
+    /**
      * Create Password Reset Email.
      *
      * @param string $email The email of the user that wishes to reset their password.
@@ -941,6 +1042,10 @@ class UserManagement
      */
     public function sendPasswordResetEmail($email, $passwordResetUrl)
     {
+        $msg = "'sendPasswordResetEmail' is deprecated. Please use 'createPasswordReset' instead. This method will be removed in a future major version.";
+
+        error_log($msg);
+
         $path = "user_management/password_reset/send";
 
         $params = [
@@ -1082,7 +1187,7 @@ class UserManagement
 
         $baseUrl = WorkOS::getApiBaseUrl();
 
-        return "{$baseUrl}/sso/jwks/{$clientId}";
+        return "{$baseUrl}sso/jwks/{$clientId}";
     }
 
     /**
@@ -1100,6 +1205,6 @@ class UserManagement
 
         $baseUrl = WorkOS::getApiBaseUrl();
 
-        return "{$baseUrl}/user_management/sessions/logout?session_id={$sessionId}";
+        return "{$baseUrl}user_management/sessions/logout?session_id={$sessionId}";
     }
 }
